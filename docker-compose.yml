@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
     mysql:
-        container_name: ssadmin-mysql
+        container_name: imhqs-mysql
         image: mysql:8
         restart: unless-stopped
         tty: true
@@ -10,10 +10,10 @@ services:
             - "3306:3306"
         environment:
             MYSQL_DATABASE: ${MYSQL_DATABASE:-cms}
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-9289662023}
         volumes:
             - mysql:/var/lib/mysql/
-            - ./src/sql/ssadmin_init.sql:/docker-entrypoint-initdb.d/ssadmin_init.sql:ro
+            - ./src/sql/imhqs_init.sql:/docker-entrypoint-initdb.d/imhqs_init.sql:ro
         networks:
             - my_network
 
@@ -24,30 +24,30 @@ services:
         ports:
             - "8888:80"
         environment:
-            PMA_HOST: ssadmin-mysql
+            PMA_HOST: imhqs-mysql
         networks:
             - my_network
 
     server:
-        container_name: ssadmin-server
+        container_name: imhqs-server
         build:
-            context: ./src/springboot-server/
-        image: ssadmin-server
+            context: ./src/imhqs-server/
+        image: imhqs-server
         restart: unless-stopped
         ports:
-            - "28080:28080"
+            - "8080:8080"
         networks:
             - my_network
         environment:
             JAVA_OPTS: ${JAVA_OPTS:- -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom}
-            ARGS: --spring.datasource.url=${DATASOURCE_URL:-jdbc:mysql://ssadmin-mysql:3306/cms?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true} --spring.datasource.username=${DATASOURCE_USERNAME:-root} --spring.datasource.password=${DATASOURCE_PASSWORD:-123456}
+            ARGS: --spring.datasource.url=${DATASOURCE_URL:-jdbc:mysql://imhqs-mysql:3306/cms?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true} --spring.datasource.username=${DATASOURCE_USERNAME:-root} --spring.datasource.password=${DATASOURCE_PASSWORD:-9289662023}
         depends_on:
             - mysql
     web:
-        container_name: ssadmin-web
+        container_name: imhqs-web
         build:
-            context: ./src/vue-web
-        image: ssadmin-web
+            context: ./src/frontend
+        image: imhqs-web
         restart: unless-stopped
         ports:
             - "80:80"
