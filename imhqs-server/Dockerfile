@@ -1,14 +1,14 @@
-# 构建阶段
-FROM maven:3.8.6-openjdk-17 AS builder
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn package -DskipTests
+FROM eclipse-temurin:8-jre
 
-# 生产镜像
-FROM openjdk:8-jdk-slim
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+RUN mkdir -p /ssadmin-server
+WORKDIR /imhqs-server
+
+COPY ./target/imhqs-0.0.1-SNAPSHOT.jar app.jar
+
+ENV TZ=Asia/Shanghai
+ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
+ENV ARGS=""
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+CMD java ${JAVA_OPTS} -jar app.jar $ARGS
